@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="purple_200">#FFBB86FC</color>
+    <color name="purple_500">#5BD4CE</color>
+    <color name="purple_700">#33CFC7</color>
+    <color name="teal_200">#64D1CB</color>
+    <color name="teal_700">#FF018786</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="progress1_colour">#13C4F2</color>
+    <color name="progress2_colour"> #F04C54</color>
+
+</resources>

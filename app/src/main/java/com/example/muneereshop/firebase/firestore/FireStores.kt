@@ -3,14 +3,18 @@ package com.example.muneereshop.firebase.firestore
 import android.app.Activity
 import android.content.Context
 import android.content.SharedPreferences
+import android.net.Uri
 import android.util.Log
+import com.google.firebase.storage.FirebaseStorage
 import com.example.muneereshop.activities.LoginActivity
+import com.example.muneereshop.activities.ProfileActivity
 import com.example.muneereshop.activities.RegisterActivity
 import com.example.muneereshop.constants.Constants
 import com.example.muneereshop.user.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
+import com.google.firebase.storage.StorageReference
 
 class FireStores {
     private val myFirestore = FirebaseFirestore.getInstance()
@@ -68,5 +72,36 @@ class FireStores {
             }
         }
             }
+    }
+    fun uploadImageToCloudStorage(activity: Activity,imageFileURI:Uri?,imageType:String){
+        val myRef : StorageReference = FirebaseStorage.getInstance().reference.child(imageType + System.currentTimeMillis() + "." + Constants.getFileExtension(activity,imageFileURI))
+        myRef.putFile(imageFileURI!!).addOnSuccessListener { taskSnapshot ->
+
+            Log.e("Firebase Image URL",
+                taskSnapshot.metadata!!.reference!!.downloadUrl.toString())
+
+            // Get the downloadable url from the task snapshot
+            taskSnapshot.metadata!!.reference!!.downloadUrl.addOnSuccessListener { uri ->
+                Log.e("Download Image URL",uri.toString())
+
+                // Here call a function of base activity for transferring the result to it.
+                when(activity){
+                    is ProfileActivity -> {
+                        activity.imageUploadSuccess(uri.toString())
+                    }
+
+                }
+
+
+            }.addOnFailureListener { exception ->
+                when (activity){
+                    is ProfileActivity -> {
+                        activity.loading.isDismiss()
+                    }
+                }
+
+            }
+
+        }
     }
 }

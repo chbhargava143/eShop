@@ -19,16 +19,30 @@
             android:layout_height="match_parent"
             android:paddingBottom="@dimen/_16ssp">
 
-            <ImageView
-                android:id="@+id/imageView3"
-                android:layout_width="110dp"
-                android:layout_height="110dp"
-                android:layout_marginTop="60dp"
-                android:scaleType="fitXY"
+            <FrameLayout
+                android:id="@+id/user_framelayout"
+                android:layout_width="@dimen/_112sdp"
+                android:layout_height="@dimen/_112sdp"
+                android:layout_marginTop="@dimen/_50sdp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_account_24" />
+                app:layout_constraintTop_toTopOf="parent">
+                <ImageView
+                    android:id="@+id/iv_user_photo"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="@dimen/_2sdp"
+                    android:background="@color/browser_actions_bg_grey"
+                    android:scaleType="fitXY"
+                    app:srcCompat="@drawable/ic_user_placeholder"
+                    />
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/user_image_background"
+                    />
+
+            </FrameLayout>
 
             <EditText
                 android:id="@+id/profile_first_Name"
@@ -44,7 +58,7 @@
                 android:inputType="textPersonName"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/imageView3" />
+                app:layout_constraintTop_toBottomOf="@+id/user_framelayout" />
 
             <EditText
                 android:id="@+id/profile_last_Name"

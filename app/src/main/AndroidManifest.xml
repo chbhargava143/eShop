@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.muneereshop">
-    <!--TODO Step 3: Add the Read Storage Permission to Select the image from Storage.-->
-    <!--START-->
+    <!-- TODO Step 3: Add the Read Storage Permission to Select the image from Storage. -->
+    <!-- START -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
-    <!--END-->
 
     <application
         android:allowBackup="true"
@@ -15,21 +14,21 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.MuneerEShop">
+        <activity android:name=".activities.DashboardActivity"></activity>
         <activity
             android:name=".activities.ProfileActivity"
             android:theme="@style/Theme.MuneerEShop.ActionBar" />
-
         <activity android:name=".activities.SettingsActivity" />
         <activity android:name=".activities.ForgotPasswordActivity" />
         <activity android:name=".activities.HomeActivity" />
         <activity android:name=".activities.RegisterActivity" />
-
-        <activity android:name=".activities.LoginActivity"
+        <activity
+            android:name=".activities.LoginActivity"
             android:theme="@style/Theme.MuneerEShop.ActionBars" />
-
-        <activity android:name=".activities.SplashActivity"
-                android:screenOrientation="fullSensor"
-                android:theme="@style/Theme.MuneerEShop.NoActionBar">
+        <activity
+            android:name=".activities.SplashActivity"
+            android:screenOrientation="fullSensor"
+            android:theme="@style/Theme.MuneerEShop.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

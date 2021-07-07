@@ -104,4 +104,22 @@ class FireStores {
 
         }
     }
+
+    fun updateUserProfileData(activity: Activity,userHashMap: HashMap<String, Any>){
+        myFirestore.collection(Constants.USERS).document(getCurrentUserId()).update(userHashMap).addOnSuccessListener {
+
+            when (activity){
+                is ProfileActivity -> {
+                    activity.userProfileUpdateSuccess()
+                }
+            }
+        }.addOnFailureListener { e ->
+            when (activity){
+                is ProfileActivity -> {
+                    activity.loading.isDismiss()
+                }
+            }
+            Log.e(activity.javaClass.simpleName,"Error while upadating the user details.",e)
+        }
+    }
 }

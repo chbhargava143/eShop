@@ -1,11 +1,15 @@
 package com.example.muneereshop.activities
 
 import android.Manifest
+import android.app.Activity
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.TextUtils
+import android.util.Log
+import android.util.Log.e
 import android.view.View
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
@@ -16,6 +20,8 @@ import com.example.muneereshop.databinding.ActivityProfileBinding
 import com.example.muneereshop.firebase.firestore.FireStores
 import com.example.muneereshop.progressbar.DialogueProgress
 import com.example.muneereshop.user.User
+import com.example.muneereshop.utils.GlideLoader
+import java.io.IOException
 
 class ProfileActivity : AppCompatActivity(), View.OnClickListener {
     var loading = DialogueProgress(this)
@@ -39,7 +45,7 @@ class ProfileActivity : AppCompatActivity(), View.OnClickListener {
         val profileFirstName = binding.profileFirstName
         val profileLastName = binding.profileLastName
         val profileEmail = binding.profileEmail
-
+        val saveButton = binding.buttonSubmit
         profileFirstName.isEnabled = false
         profileFirstName.setText(myUserDetails.firstName)
 
@@ -51,6 +57,7 @@ class ProfileActivity : AppCompatActivity(), View.OnClickListener {
         val iv_user_photo = binding.ivUserPhoto
 
         iv_user_photo.setOnClickListener(this@ProfileActivity)
+        saveButton.setOnClickListener(this@ProfileActivity)
     }
 
     fun imageUploadSuccess(imageURL: String) {
@@ -59,6 +66,7 @@ class ProfileActivity : AppCompatActivity(), View.OnClickListener {
 
         /// updateUserProfileDetails()
     }
+
 
     override fun onClick(v: View?) {
         if (v != null) {
@@ -72,11 +80,13 @@ class ProfileActivity : AppCompatActivity(), View.OnClickListener {
                         )
                         == PackageManager.PERMISSION_GRANTED
                     ) {
-                        Toast.makeText(
-                            this@ProfileActivity,
-                            "You already have the storage permissions",
-                            Toast.LENGTH_LONG
-                        ).show()
+
+//                        Toast.makeText(
+//                            this@ProfileActivity,
+//                            "You already have the storage permissions",
+//                            Toast.LENGTH_LONG
+//                        ).show()
+                        Constants.showImageChooser(this)
                     } else {
 
                         /*Requests permissions to be granted to this application. These permissions
@@ -90,11 +100,39 @@ class ProfileActivity : AppCompatActivity(), View.OnClickListener {
                         )
                     }
                 }
+                R.id.button_Submit -> {
+                    if (validateProfiledetails()) {
+                        val male = binding.selectMale
+                        val feMale = binding.selectMale
 
+                        val userHasMap = HashMap<String, Any>()
+                        val mobileNumber = binding.profileMobileNumber.toString().trim { it <= ' ' }
+                        val gender = if (male.isChecked) {
+                            Constants.MALE
+                        } else {
+                            Constants.FEMALE
+                        }
+                        if (mobileNumber.isNotEmpty()) {
+                            userHasMap[Constants.MOBILE] = mobileNumber.toLong()
+                        }
+                        userHasMap[Constants.GENDER] = gender
+                        loading.startLoading()
+                        FireStores().updateUserProfileData(this,userHasMap)
+                    }
+                    //Toast.makeText(this, "Your details are valid.you can updae them.", Toast.LENGTH_LONG).show()
+                }
             }
 
         }
     }
+fun userProfileUpdateSuccess(){
+    loading.isDismiss()
+    Toast.makeText(this, "Your profile update is success.", Toast.LENGTH_LONG).show()
+    // Redirect to the Main Screen after profile completion.
+    startActivity(Intent(this@ProfileActivity, HomeActivity::class.java))
+    finish()
+}
+
 
     override fun onRequestPermissionsResult(
         requestCode: Int,
@@ -106,14 +144,54 @@ class ProfileActivity : AppCompatActivity(), View.OnClickListener {
         if (requestCode == Constants.READ_STORAGE_PERMISSION_CODE) {
             // if permission granted
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(this, "The storage permission granted.", Toast.LENGTH_SHORT).show()
+                Constants.showImageChooser(this)
+
+                // Toast.makeText(this, "The storage permission granted.", Toast.LENGTH_SHORT).show()
             } else {
                 Toast.makeText(this, "The storage permission Denied.", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        val ivUserPhoto = binding.ivUserPhoto
+        if (resultCode == Activity.RESULT_OK) {
+            if (data != null) {
+                try {
+                    val selectedImageUri = data.data!!
+                    GlideLoader(this).loadUserPicture(selectedImageUri, ivUserPhoto)
+                    //  binding.ivUserPhoto.setImageURI(Uri.parse(selectedImageUri.toString()))
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                    Toast.makeText(
+                        this@ProfileActivity,
+                        "image selection failed",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+            }
+        } else if (resultCode == Activity.RESULT_CANCELED) {
 
+
+            Log.e("Result cancelled", "Image selection Cancelled")
+        }
+    }
+
+    fun validateProfiledetails(): Boolean {
+        val mobileNumber = binding.profileMobileNumber.toString().trim { it <= ' ' }
+        return when {
+            TextUtils.isEmpty(mobileNumber) -> {
+                Toast.makeText(this@ProfileActivity, "Enter Mobile Number", Toast.LENGTH_SHORT)
+                    .show()
+                false
+            }
+            else -> {
+                true
+            }
+
+        }
+    }
 }
 
 

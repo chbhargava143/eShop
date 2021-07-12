@@ -1,4 +1,4 @@
-package com.example.muneereshop.activities
+package com.example.muneereshop.ui.activities
 
 import android.Manifest
 import android.app.Activity
@@ -9,7 +9,6 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.TextUtils
 import android.util.Log
-import android.util.Log.e
 import android.view.View
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
@@ -24,8 +23,12 @@ import com.example.muneereshop.utils.GlideLoader
 import java.io.IOException
 
 class ProfileActivity : AppCompatActivity(), View.OnClickListener {
+    // Progress Dialogue
     var loading = DialogueProgress(this)
+
     private lateinit var binding: ActivityProfileBinding
+
+    // Instance of User data model class. We will initialize it later on.
     private lateinit var myUserDetails: User
 
     // Add a global variable for URI of a selected image from phone storage.
@@ -38,14 +41,18 @@ class ProfileActivity : AppCompatActivity(), View.OnClickListener {
         super.onCreate(savedInstanceState)
         binding = ActivityProfileBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        myUserDetails = User()
         if (intent.hasExtra(Constants.EXTRA_USER_DETAILS)) {
             // Get the user details from intent as a ParcelableExtra.
             myUserDetails = intent.getParcelableExtra(Constants.EXTRA_USER_DETAILS)!!
         }
+
+        // Here, the some of the edittext components are disabled because it is added at a time of Registration.
         val profileFirstName = binding.profileFirstName
         val profileLastName = binding.profileLastName
         val profileEmail = binding.profileEmail
         val saveButton = binding.buttonSubmit
+
         profileFirstName.isEnabled = false
         profileFirstName.setText(myUserDetails.firstName)
 
@@ -60,20 +67,12 @@ class ProfileActivity : AppCompatActivity(), View.OnClickListener {
         saveButton.setOnClickListener(this@ProfileActivity)
     }
 
-    fun imageUploadSuccess(imageURL: String) {
-
-        myUserProfileImageURL = imageURL
-
-        /// updateUserProfileDetails()
-    }
-
 
     override fun onClick(v: View?) {
         if (v != null) {
             when (v.id) {
                 R.id.iv_user_photo -> {
-                    // Here we will check if the permission is already allowed or we need to request for it.
-                    // First of all we will check the READ_EXTERNAL_STORAGE permission and if it is not allowed we will request for the same.
+
                     if (ContextCompat.checkSelfPermission(
                             this,
                             Manifest.permission.READ_EXTERNAL_STORAGE
@@ -81,58 +80,86 @@ class ProfileActivity : AppCompatActivity(), View.OnClickListener {
                         == PackageManager.PERMISSION_GRANTED
                     ) {
 
-//                        Toast.makeText(
-//                            this@ProfileActivity,
-//                            "You already have the storage permissions",
-//                            Toast.LENGTH_LONG
-//                        ).show()
                         Constants.showImageChooser(this)
                     } else {
 
-                        /*Requests permissions to be granted to this application. These permissions
-                         must be requested in your manifest, they should not be granted to your app,
-                         and they should have protection level*/
-
                         ActivityCompat.requestPermissions(
-                            this,
+                            this@ProfileActivity,
                             arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
                             Constants.READ_STORAGE_PERMISSION_CODE
                         )
                     }
                 }
                 R.id.button_Submit -> {
-                    if (validateProfiledetails()) {
-                        val male = binding.selectMale
-                        val feMale = binding.selectMale
 
-                        val userHasMap = HashMap<String, Any>()
-                        val mobileNumber = binding.profileMobileNumber.toString().trim { it <= ' ' }
-                        val gender = if (male.isChecked) {
-                            Constants.MALE
-                        } else {
-                            Constants.FEMALE
-                        }
-                        if (mobileNumber.isNotEmpty()) {
-                            userHasMap[Constants.MOBILE] = mobileNumber.toLong()
-                        }
-                        userHasMap[Constants.GENDER] = gender
+                    if (validateProfiledetails()) {
                         loading.startLoading()
-                        FireStores().updateUserProfileData(this,userHasMap)
+                        if (mySelectedImageFileUri != null){
+                            FireStores().uploadImageToCloudStorage(this,mySelectedImageFileUri,Constants.USER_PROFILE_IMAGE)
+                        }else {
+                            updateUserProfileDetails()
+                        }
+
+
                     }
-                    //Toast.makeText(this, "Your details are valid.you can updae them.", Toast.LENGTH_LONG).show()
                 }
             }
 
         }
     }
-fun userProfileUpdateSuccess(){
-    loading.isDismiss()
-    Toast.makeText(this, "Your profile update is success.", Toast.LENGTH_LONG).show()
-    // Redirect to the Main Screen after profile completion.
-    startActivity(Intent(this@ProfileActivity, HomeActivity::class.java))
-    finish()
-}
 
+private fun updateUserProfileDetails(){
+    val First_Name = binding.profileFirstName
+    val Last_Name = binding.profileLastName
+    val Mobile_Number = binding.profileMobileNumber
+    val Male = binding.selectMale
+    val userHashMap = HashMap<String, Any>()
+
+    // Get the FirstName from editText and trim the space
+    val firstName = First_Name.text.toString().trim { it <= ' ' }
+    if (firstName != myUserDetails.firstName) {
+        userHashMap[Constants.FIRST_NAME] = firstName
+    }
+
+    // Get the LastName from editText and trim the space
+    val lastName = Last_Name.text.toString().trim { it <= ' ' }
+    if (lastName != myUserDetails.lastName) {
+        userHashMap[Constants.LAST_NAME] = lastName
+    }
+
+    // Here we get the text from editText and trim the space
+    val mobileNumber = Mobile_Number.text.toString().trim { it <= ' ' }
+    val gender = if (Male.isChecked) {
+        Constants.MALE
+    } else {
+        Constants.FEMALE
+    }
+
+    if (myUserProfileImageURL.isNotEmpty()) {
+        userHashMap[Constants.IMAGE] = myUserProfileImageURL
+    }
+
+    if (mobileNumber.isNotEmpty() && mobileNumber != myUserDetails.mobile.toString()) {
+        userHashMap[Constants.MOBILE] = mobileNumber.toLong()
+    }
+
+    if (gender.isNotEmpty() && gender != myUserDetails.gender) {
+        userHashMap[Constants.GENDER] = gender
+    }
+
+    // Here if user is about to complete the profile then update the field or else no need.
+    // 0: User profile is incomplete.
+    // 1: User profile is completed.
+    if (myUserDetails.profileCompleted == 0) {
+        userHashMap[Constants.COMPLETE_PROFILE] = 1
+    }
+
+    // call the registerUser function of FireStore class to make an entry in the database.
+    FireStores().updateUserProfileData(
+        this@ProfileActivity,
+        userHashMap
+    )
+}
 
     override fun onRequestPermissionsResult(
         requestCode: Int,
@@ -152,15 +179,15 @@ fun userProfileUpdateSuccess(){
             }
         }
     }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+   override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         val ivUserPhoto = binding.ivUserPhoto
         if (resultCode == Activity.RESULT_OK) {
+            if (requestCode == Constants.PICK_IMAGE_REQUEST_CODE){
             if (data != null) {
                 try {
-                    val selectedImageUri = data.data!!
-                    GlideLoader(this).loadUserPicture(selectedImageUri, ivUserPhoto)
+                    mySelectedImageFileUri = data.data!!
+                    GlideLoader(this@ProfileActivity).loadUserPicture(mySelectedImageFileUri!!, ivUserPhoto)
                     //  binding.ivUserPhoto.setImageURI(Uri.parse(selectedImageUri.toString()))
                 } catch (e: IOException) {
                     e.printStackTrace()
@@ -171,6 +198,7 @@ fun userProfileUpdateSuccess(){
                     ).show()
                 }
             }
+        }
         } else if (resultCode == Activity.RESULT_CANCELED) {
 
 
@@ -178,11 +206,18 @@ fun userProfileUpdateSuccess(){
         }
     }
 
+    fun userProfileUpdateSuccess(){
+        loading.isDismiss()
+        Toast.makeText(this, "Your profile update is success.", Toast.LENGTH_LONG).show()
+        // Redirect to the Main Screen after profile completion.
+        startActivity(Intent(this@ProfileActivity, HomeActivity::class.java))
+        finish()
+    }
     fun validateProfiledetails(): Boolean {
         val mobileNumber = binding.profileMobileNumber.toString().trim { it <= ' ' }
         return when {
             TextUtils.isEmpty(mobileNumber) -> {
-                Toast.makeText(this@ProfileActivity, "Enter Mobile Number", Toast.LENGTH_SHORT)
+                Toast.makeText(this@ProfileActivity, "Please Enter Mobile Number", Toast.LENGTH_SHORT)
                     .show()
                 false
             }
@@ -191,6 +226,14 @@ fun userProfileUpdateSuccess(){
             }
 
         }
+    }
+    fun imageUploadSuccess(imageURL: String) {
+       // loading.isDismiss()
+
+
+          myUserProfileImageURL = imageURL
+        updateUserProfileDetails()
+
     }
 }
 

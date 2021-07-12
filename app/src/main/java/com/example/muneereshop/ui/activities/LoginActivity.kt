@@ -1,12 +1,10 @@
-package com.example.muneereshop.activities
+package com.example.muneereshop.ui.activities
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.InputType
 import android.text.TextUtils
-import android.util.Log
-import android.util.Log.i
 import android.widget.EditText
 import android.widget.Toast
 import com.example.muneereshop.constants.Constants
@@ -80,15 +78,13 @@ class LoginActivity : AppCompatActivity() {
 
     fun userDetailsSuccess(user: User) {
         loading.isDismiss()
-        Log.i("First Name", user.firstName)
-        Log.i("Last Name", user.lastName)
-        Log.i("Email", user.email)
+
         if (user.profileCompleted == 0){
-            val intent = Intent(this@LoginActivity,ProfileActivity::class.java)
+            val intent = Intent(this@LoginActivity, ProfileActivity::class.java)
             intent.putExtra(Constants.EXTRA_USER_DETAILS,user)
             startActivity(intent)
         }else {
-            startActivity(Intent(this@LoginActivity,HomeActivity::class.java))
+            startActivity(Intent(this@LoginActivity, DashboardActivity::class.java))
         }
         finish()
     }

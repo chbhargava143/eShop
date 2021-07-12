@@ -91,6 +91,8 @@ object Constants {
          * getExtensionFromMimeType: Return the registered extension for the given MIME type.
          *
          * contentResolver.getType: Return the MIME type of the given content URL.
+         *
+         * URI means -> c:/user/cbn/download/home/jpg (and also it is a file path of the image or any thing.)
          */
         return MimeTypeMap.getSingleton()
             .getExtensionFromMimeType(activity.contentResolver.getType(uri!!))

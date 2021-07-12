@@ -1,10 +1,9 @@
-package com.example.muneereshop.activities
+package com.example.muneereshop.ui.activities
 
 import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import com.example.muneereshop.R
 import com.example.muneereshop.constants.Constants
 import com.example.muneereshop.databinding.ActivityHomeBinding
 import com.google.firebase.auth.FirebaseAuth
@@ -27,7 +26,7 @@ class HomeActivity : AppCompatActivity() {
     private fun signOut(){
         binding.clickLogout.setOnClickListener {
             FirebaseAuth.getInstance().signOut()
-            startActivity(Intent(this@HomeActivity,LoginActivity::class.java))
+            startActivity(Intent(this@HomeActivity, LoginActivity::class.java))
             finish()
         }
     }

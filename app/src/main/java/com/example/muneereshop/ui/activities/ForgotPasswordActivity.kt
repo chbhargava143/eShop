@@ -1,12 +1,10 @@
-package com.example.muneereshop.activities
+package com.example.muneereshop.ui.activities
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.ImageView
 import android.widget.Toast
-import com.example.muneereshop.R
 import com.example.muneereshop.databinding.ActivityForgotPasswordBinding
-import com.example.muneereshop.databinding.CustomActionBarBinding
 import com.example.muneereshop.progressbar.DialogueProgress
 import com.google.firebase.auth.FirebaseAuth
 

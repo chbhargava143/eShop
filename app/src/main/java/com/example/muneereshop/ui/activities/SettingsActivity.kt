@@ -1,4 +1,4 @@
-package com.example.muneereshop.activities
+package com.example.muneereshop.ui.activities
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle

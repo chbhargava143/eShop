@@ -1,4 +1,4 @@
-package com.example.muneereshop.activities
+package com.example.muneereshop.ui.activities
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
@@ -16,7 +16,7 @@ class SplashActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         Handler(Looper.myLooper()!!).postDelayed(Runnable {
-            val intent = Intent(this@SplashActivity, LoginActivity::class.java)
+            val intent = Intent(this@SplashActivity, DashboardActivity::class.java)
             startActivity(intent)
             finish()
         },2000)

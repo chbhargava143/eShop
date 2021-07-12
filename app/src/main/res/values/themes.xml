@@ -13,7 +13,11 @@
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
     </style>
-
+<style name="launch_Screen" parent="Theme.MaterialComponents">
+    <item name="windowActionBar">false</item>
+    <item name="android:windowFullscreen">true</item>
+    <item name="android:orientation">vertical</item>
+</style>
 
 
 </resources>

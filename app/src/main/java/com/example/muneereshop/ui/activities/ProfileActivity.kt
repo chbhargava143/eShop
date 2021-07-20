@@ -52,15 +52,41 @@ class ProfileActivity : AppCompatActivity(), View.OnClickListener {
         val profileLastName = binding.profileLastName
         val profileEmail = binding.profileEmail
         val saveButton = binding.buttonSubmit
+        val profile_photo = binding.ivUserPhoto
+        val profile_mobile = binding.profileMobileNumber
+       val gender_male = binding.selectMale
+        val gender_female = binding.selectFemale
 
-        profileFirstName.isEnabled = false
-        profileFirstName.setText(myUserDetails.firstName)
 
-        profileLastName.isEnabled = false
-        profileLastName.setText(myUserDetails.lastName)
+        if (myUserDetails.profileCompleted == 0){
 
-        profileEmail.isEnabled = false
-        profileEmail.setText(myUserDetails.email)
+            actionBar?.title = "Complete Profile"
+            profileFirstName.isEnabled = false
+            profileFirstName.setText(myUserDetails.firstName)
+            profileLastName.isEnabled = false
+            profileLastName.setText(myUserDetails.lastName)
+            profileEmail.isEnabled = false
+            profileEmail.setText(myUserDetails.email)
+        }else {
+            actionBar?.title = "Edit Profile"
+            GlideLoader(this@ProfileActivity).loadUserPicture(myUserDetails.image,profile_photo)
+            profileFirstName.setText(myUserDetails.firstName)
+            profileLastName.setText(myUserDetails.lastName)
+            profileEmail.isEnabled = false
+            profileEmail.setText(myUserDetails.email)
+            if (myUserDetails.mobile != 0L){
+                profile_mobile.setText(myUserDetails.mobile.toString())
+            }
+            if (myUserDetails.gender == Constants.MALE){
+                gender_male.isChecked = true
+
+            }
+            else {
+                gender_female.isChecked = true
+            }
+
+        }
+
         val iv_user_photo = binding.ivUserPhoto
 
         iv_user_photo.setOnClickListener(this@ProfileActivity)
@@ -210,7 +236,7 @@ private fun updateUserProfileDetails(){
         loading.isDismiss()
         Toast.makeText(this, "Your profile update is success.", Toast.LENGTH_LONG).show()
         // Redirect to the Main Screen after profile completion.
-        startActivity(Intent(this@ProfileActivity, HomeActivity::class.java))
+        startActivity(Intent(this@ProfileActivity, DashboardActivity::class.java))
         finish()
     }
     fun validateProfiledetails(): Boolean {
@@ -235,6 +261,8 @@ private fun updateUserProfileDetails(){
         updateUserProfileDetails()
 
     }
+
+
 }
 
 

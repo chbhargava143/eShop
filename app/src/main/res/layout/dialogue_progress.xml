@@ -27,16 +27,15 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/textView3"
+        android:id="@+id/loading_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
+        android:paddingBottom="@dimen/_5ssp"
         android:text="Please Wait .....!!"
         android:textColor="@color/black"
-        android:textStyle="bold"
         android:textSize="@dimen/_14ssp"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:paddingBottom="@dimen/_15ssp"
-        app:layout_constraintTop_toBottomOf="@+id/special2_Progress" />
+        app:layout_constraintTop_toBottomOf="@+id/special1_Progress" />
 </androidx.constraintlayout.widget.ConstraintLayout>

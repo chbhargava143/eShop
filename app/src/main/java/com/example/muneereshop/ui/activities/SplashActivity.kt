@@ -16,7 +16,7 @@ class SplashActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         Handler(Looper.myLooper()!!).postDelayed(Runnable {
-            val intent = Intent(this@SplashActivity, DashboardActivity::class.java)
+            val intent = Intent(this@SplashActivity, LoginActivity::class.java)
             startActivity(intent)
             finish()
         },2000)

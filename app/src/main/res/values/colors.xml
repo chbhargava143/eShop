@@ -11,5 +11,6 @@
     <color name="progress2_colour"> #F04C54</color>
     <color name="Primary_Color">#5BD4CE</color>
     <color name="Primary_Varient">#FF018786</color>
-
+    <color name="imageViewBackgroundColor">#E1E1E1</color>
+    <color name="CollorOFFWhite">#F8F8F8</color>
 </resources>

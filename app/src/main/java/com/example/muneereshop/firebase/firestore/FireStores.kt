@@ -5,11 +5,13 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.net.Uri
 import android.util.Log
+import androidx.fragment.app.Fragment
+import com.example.muneereshop.product.Product
 import com.google.firebase.storage.FirebaseStorage
-import com.example.muneereshop.ui.activities.LoginActivity
-import com.example.muneereshop.ui.activities.ProfileActivity
-import com.example.muneereshop.ui.activities.RegisterActivity
 import com.example.muneereshop.constants.Constants
+import com.example.muneereshop.ui.activities.*
+import com.example.muneereshop.ui.fragments.DashboardFragment
+import com.example.muneereshop.ui.fragments.ProductFragment
 import com.example.muneereshop.user.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -60,6 +62,9 @@ class FireStores {
                     is LoginActivity ->{
                         activity.userDetailsSuccess(user!!)
                     }
+                    is SettingsActivity -> {
+                        activity.userDetailsSuccess(user!!)
+                    }
 
                 }
 
@@ -67,6 +72,9 @@ class FireStores {
             .addOnFailureListener { e ->
         when(activity){
             is LoginActivity ->{
+                activity.loading.isDismiss()
+            }
+            is SettingsActivity -> {
                 activity.loading.isDismiss()
             }
         }
@@ -101,22 +109,32 @@ class FireStores {
         val myRef : StorageReference = FirebaseStorage.getInstance().reference.child(imageType + System.currentTimeMillis() + "." + Constants.getFileExtension(activity,imageFileURI))
         myRef.putFile(imageFileURI!!).addOnSuccessListener { taskSnapshot ->
 
-            Log.e("Firebase Image URL",
-                taskSnapshot.metadata!!.reference!!.downloadUrl.toString())
+            Log.e(
+                "Firebase Image URL",
+                taskSnapshot.metadata!!.reference!!.downloadUrl.toString()
+            )
 
             // Get the downloadable url from the task snapshot
             taskSnapshot.metadata!!.reference!!.downloadUrl.addOnSuccessListener { uri ->
-                Log.e("Download Image URL",uri.toString())
+                Log.e("Download Image URL", uri.toString())
 
                 // Here call a function of base activity for transferring the result to it.
-                when(activity){
+                when (activity) {
                     is ProfileActivity -> {
                         activity.imageUploadSuccess(uri.toString())
                     }
+                    is AddProductActivity -> {
+                        activity.imageUploadSuccess(uri.toString())
+                    }
                 }
-            }.addOnFailureListener { exception ->
+
+            }
+        }.addOnFailureListener { exception ->
                 when (activity){
                     is ProfileActivity -> {
+                        activity.loading.isDismiss()
+                    }
+                    is AddProductActivity -> {
                         activity.loading.isDismiss()
                     }
                 }
@@ -127,8 +145,70 @@ class FireStores {
                 )
             }
 
-        }
-    }
 
+    }
+    fun uploadProductDetails(activity: AddProductActivity, productInfo: Product) {
+
+        myFirestore.collection(Constants.PRODUCTS)
+            .document()
+            // Here the userInfo are Field and the SetOption is set to merge. It is for if we wants to merge
+            .set(productInfo, SetOptions.merge())
+            .addOnSuccessListener {
+
+                // Here call a function of base activity for transferring the result to it.
+                activity.productUploadSuccess()
+            }
+            .addOnFailureListener { e ->
+
+                activity.loading.isDismiss()
+
+                Log.e(
+                    activity.javaClass.simpleName,
+                    "Error while uploading the product details.",
+                    e
+                )
+            }
+    }
+    fun getProductsDetails(fragment:Fragment){
+        myFirestore.collection(Constants.PRODUCTS)
+            .whereEqualTo(Constants.USER_ID,getCurrentUserId())
+            .get()
+            .addOnSuccessListener { document ->
+                Log.e("Products List",document.documents.toString())
+                val productsList : ArrayList<Product> = ArrayList()
+                for (i in document.documents){
+                    val product = i.toObject(Product::class.java)
+                    product!!.product_id = i.id
+                    productsList.add(product)
+
+                }
+                when (fragment){
+                    is ProductFragment -> {
+                        fragment.successProductsListFromFireStore(productsList)
+                    }
+                }
+
+
+            }
+    }
+    fun getDashBoardItemsList(fragment: DashboardFragment){
+        myFirestore.collection(Constants.PRODUCTS)
+            .get()
+            .addOnSuccessListener { document ->
+                Log.e("Dashboard Products List",document.documents.toString())
+                val productsList : ArrayList<Product> = ArrayList()
+                for (i in document.documents){
+                    val product = i.toObject(Product::class.java)
+                    product!!.product_id = i.id
+                    productsList.add(product)
+
+                }
+                fragment.successDashboardItemsList(productsList)
+            }
+            .addOnFailureListener { e ->
+                fragment.loading.isDismiss()
+                Log.e(fragment.javaClass.simpleName,"Error while gettin dashboard items list,",e)
+            }
+    }
 
 }

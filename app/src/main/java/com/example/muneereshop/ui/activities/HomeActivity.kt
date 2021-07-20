@@ -15,19 +15,8 @@ class HomeActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityHomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
-       signOut()
-        val sharedPreferences = getSharedPreferences(Constants.MUNEERESHOP_PREFERENCES,Context.MODE_PRIVATE)
-        val username = sharedPreferences.getString(Constants.LOGGED_IN_USERNAME,"")!!
-        binding.tvUserName.text = "The logged in user is $username"
-
 
 
     }
-    private fun signOut(){
-        binding.clickLogout.setOnClickListener {
-            FirebaseAuth.getInstance().signOut()
-            startActivity(Intent(this@HomeActivity, LoginActivity::class.java))
-            finish()
-        }
-    }
+
 }

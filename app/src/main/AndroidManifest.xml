@@ -14,28 +14,34 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.MuneerEShop">
-        <activity android:name=".ui.activities.AddProductActivity"></activity>
+        <activity android:name=".ui.activities.ProductDetailsActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.MuneerEShop.NoActionBar"
+            >
+
+        </activity>
+        <activity android:name=".ui.activities.AddProductActivity" />
         <activity
             android:name=".ui.activities.SplashActivity"
-            android:theme="@style/Theme.MuneerEShop.NoActionBar"
-            android:screenOrientation="fullSensor">
+            android:screenOrientation="fullSensor"
+            android:theme="@style/Theme.MuneerEShop.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".ui.activities.DashboardActivity" />
+        <activity android:name=".ui.activities.DashboardActivity" />
         <activity android:name=".ui.activities.ProfileActivity" />
-        <activity android:name=".ui.activities.SettingsActivity"></activity>
+        <activity android:name=".ui.activities.SettingsActivity" />
         <activity android:name=".ui.activities.ForgotPasswordActivity" />
         <activity android:name=".ui.activities.HomeActivity" />
         <activity
             android:name=".ui.activities.RegisterActivity"
-            android:theme="@style/Theme.MuneerEShop.NoActionBar"/>
-        <activity android:name=".ui.activities.LoginActivity"
-            android:theme="@style/Theme.MuneerEShop.NoActionBar"/>
+            android:theme="@style/Theme.MuneerEShop.NoActionBar" />
+        <activity
+            android:name=".ui.activities.LoginActivity"
+            android:theme="@style/Theme.MuneerEShop.NoActionBar" />
     </application>
 
 </manifest>

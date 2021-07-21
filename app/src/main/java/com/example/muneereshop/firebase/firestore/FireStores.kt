@@ -191,6 +191,34 @@ class FireStores {
 
             }
     }
+    fun gettingProductsDetails(activity: ProductDetailsActivity,productId: String){
+        myFirestore.collection(Constants.PRODUCTS)
+            .document(productId)
+            .get()
+            .addOnSuccessListener { document ->
+                Log.e(activity.javaClass.simpleName ,document.toString())
+                val product = document.toObject(Product::class.java)
+            }.addOnFailureListener { e ->
+                activity.loading.isDismiss()
+                Log.e(
+                    activity.javaClass.simpleName,
+                    e.message,
+                    e
+                )
+
+            }
+    }
+    fun deleteProduct(fragment: ProductFragment,productId:String){
+    myFirestore.collection(Constants.PRODUCTS)
+        .document(productId)
+        .delete()
+        .addOnSuccessListener {
+        fragment.productDeleteSuccess()
+        }.addOnFailureListener { e ->
+            fragment.loading.isDismiss()
+            Log.e(fragment.requireActivity().javaClass.simpleName,"Error while deleting the Product",e)
+        }
+    }
     fun getDashBoardItemsList(fragment: DashboardFragment){
         myFirestore.collection(Constants.PRODUCTS)
             .get()

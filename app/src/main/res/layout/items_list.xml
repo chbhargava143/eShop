@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_marginTop="@dimen/_12sdp"
     android:padding="@dimen/_8sdp"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:id="@+id/product_layout">
 
     <LinearLayout
         android:id="@+id/linearLayout"
